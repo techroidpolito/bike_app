@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Bikers App</string>
+    <string name="edit_button_description">To switch to edit mode</string>
+    <string name="save_button_description">To save the edited information and exit the edit mode</string>
+    <string name="username">Gratus Iruthaya Kisho Arul Rayappan</string>
+    <string name="phone_number">+39 366123456</string>
+    <string name="email_address">Email Address</string>
+    <string name="short_description">Short Description</string>
+    <string name="address">Address</string>
+    <string name="identity_document">Identity Document</string>
+    <string name="profile_picture_description">Profile picture</string>
+    <string name="save_button">Save</string>
+</resources>
