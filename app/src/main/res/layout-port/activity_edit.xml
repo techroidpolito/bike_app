@@ -22,7 +22,7 @@
             android:layout_margin="16dp"
             />
         <Button
-            android:id="@+id/editButton"
+            android:id="@+id/saveButton"
             android:text="Save"
             android:textColor="#9fffffff"
             android:textSize="16sp"

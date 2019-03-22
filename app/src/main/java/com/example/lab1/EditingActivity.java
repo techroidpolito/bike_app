@@ -9,10 +9,11 @@ public class EditingActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        final Button save_button = findViewById(R.id.saveButton);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
+
+        final Button save_button = findViewById(R.id.saveButton);
 
         save_button.setOnClickListener(new View.OnClickListener() {
             @Override
