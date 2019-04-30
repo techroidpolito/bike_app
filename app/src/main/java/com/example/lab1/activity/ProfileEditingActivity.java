@@ -7,7 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -25,7 +25,7 @@ import com.example.lab1.R;
 import com.example.lab1.model.ProfileInfo;
 
 
-public class EditingActivity extends AppCompatActivity {
+public class ProfileEditingActivity extends AppCompatActivity {
     ImageButton edit_picture;
     EditText username_et;
     EditText email_address_et;
@@ -126,7 +126,7 @@ public class EditingActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_edit, menu);
-        Log.i("onCreateOptionsMenu","ok in EditingActivity");
+        Log.i("onCreateOptionsMenu","ok in ProfileEditingActivity");
         return true;
     }
 

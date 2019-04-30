@@ -5,11 +5,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -20,7 +19,7 @@ import java.io.FileNotFoundException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity {
+public class ProfileNoEditingActivity extends AppCompatActivity {
     TextView tv_username;
     TextView tv_email_address;
     TextView tv_phone_nb;
@@ -135,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        Log.i("onCreateOptionsMenu","ok in MainActivity");
+        Log.i("onCreateOptionsMenu","ok in ProfileNoEditingActivity");
         return true;
     }
 
@@ -143,8 +142,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) { switch(item.getItemId()) {
         case R.id.editButton:
             Intent editing_intent = new Intent(
-                    MainActivity.this,
-                    EditingActivity.class);
+                    ProfileNoEditingActivity.this,
+                    ProfileEditingActivity.class);
             editing_intent.putExtra("profile_info",profileInfo.toArrayList());
             startActivityForResult(editing_intent, edit_request);
         }

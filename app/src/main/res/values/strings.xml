@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Bikers App</string>
+    <string name="app_name">EGAL Delivery - Bikers App</string>
     <string name="edit_button_description">To switch to edit mode</string>
     <string name="save_button_description">To save the edited information and exit the edit mode</string>
     <string name="cancel_button_description">To cancel the current change</string>
@@ -12,4 +12,5 @@
     <string name="profile_picture_description">Profile picture</string>
     <string name="save_button">Save</string>
     <string name="cancel_button">Cancel</string>
+    <string name="default_positioning">Position and path to destination\n(incoming)</string>
 </resources>
