@@ -19,6 +19,8 @@ import android.widget.ImageButton;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+
+import androidx.appcompat.widget.Toolbar;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import com.example.lab1.R;
@@ -26,17 +28,14 @@ import com.example.lab1.model.ProfileInfo;
 
 
 public class ProfileEditingActivity extends AppCompatActivity {
-    ImageButton edit_picture;
-    EditText username_et;
-    EditText email_address_et;
-    EditText phone_nb_et;
-    EditText description_et;
-    EditText address_et;
-    EditText id_et;
-    CircleImageView profileImage;
-
-    ProfileInfo profileInfo;
+    private ImageButton edit_picture;
+    private EditText username_et, email_address_et, phone_nb_et, description_et, address_et, id_et;
+    private CircleImageView profileImage;
+    private Toolbar toolbar;
     private Uri imageUri;
+
+    private ProfileInfo profileInfo;
+    private String bikerId;
     static int picture_request_code = 2;
     static int background_request_code = 3;
 
@@ -47,6 +46,7 @@ public class ProfileEditingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit);
         Intent i = getIntent();
         profileInfo = new ProfileInfo(i.getStringArrayListExtra("profile_info"));
+        bikerId = i.getStringExtra("bikerId");
 
         if (savedInstanceState != null) {
             profileInfo = new ProfileInfo( savedInstanceState.getStringArrayList("profile_info" ));
@@ -61,6 +61,11 @@ public class ProfileEditingActivity extends AppCompatActivity {
         address_et = findViewById(R.id.edit_address);
         id_et = findViewById(R.id.edit_identity_document);
         profileImage = findViewById(R.id.edit_profile_picture);
+        toolbar = findViewById(R.id.editToolbar);
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         if (profileInfo.isAlready_filled()){
             String username = profileInfo.getUsername();
@@ -134,11 +139,11 @@ public class ProfileEditingActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch(item.getItemId()) {
-            case R.id.cancelButton:
-                Intent cancelIntent = new Intent();
-                cancelIntent.putExtra("button", "cancel");
-                setResult(RESULT_OK, cancelIntent);
-                finish();
+            //case R.id.cancelButton:
+                //Intent cancelIntent = new Intent();
+                //cancelIntent.putExtra("button", "cancel");
+                //setResult(RESULT_OK, cancelIntent);
+                //finish();
 
             case R.id.saveButton:
                 String username = username_et.getText().toString();

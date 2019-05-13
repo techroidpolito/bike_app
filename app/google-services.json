@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "120333587814",
+    "firebase_url": "https://techroid-1557576649699.firebaseio.com",
+    "project_id": "techroid-1557576649699",
+    "storage_bucket": "techroid-1557576649699.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:120333587814:android:790c30d006051732",
+        "android_client_info": {
+          "package_name": "com.example.lab1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "120333587814-4fb9qcua4h1gifgs4qi53sog3iis57jk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQ1oWNQg4ZkDTwApRJypmn_ELZUaMYfKM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "120333587814-4fb9qcua4h1gifgs4qi53sog3iis57jk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

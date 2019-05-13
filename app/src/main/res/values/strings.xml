@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">EGAL Delivery - Bikers App</string>
+    <string name="app_name"> EGAL Delivery - Bikers App</string>
     <string name="edit_button_description">To switch to edit mode</string>
     <string name="save_button_description">To save the edited information and exit the edit mode</string>
     <string name="cancel_button_description">To cancel the current change</string>
+    <string name="restaurant_name">Restaurant</string>
     <string name="username">Username</string>
     <string name="phone_number">Phone number</string>
     <string name="email_address">Email Address</string>
@@ -12,5 +13,22 @@
     <string name="profile_picture_description">Profile picture</string>
     <string name="save_button">Save</string>
     <string name="cancel_button">Cancel</string>
+    <string name="edit_button">Edit</string>
     <string name="default_positioning">Position and path to destination\n(incoming)</string>
+    <string name="no_delivery">Currently no delivery</string>
+    <string name="arrived">I\'m arrived</string>
+    <string name="order_content">Order\'s details</string>
+    <string name="pick_up">I picked up the order</string>
+    <string name="submit">Submit</string>
+    <string name="comments">Comments (optional)</string>
+    <string name="client_name">Client</string>
+    <string name="no_request">No request sent by a restaurant as of now</string>
+    <string name="accept">Accept</string>
+    <string name="reject">Reject</string>
+    <string name="distance">Distance</string>
+    <string name="payment">Payment</string>
+    <string name="order_test">Order n°1</string>
+    <string name="order_delivered">I delivered the order</string>
+    <string name="profile">Profile</string>
+    <string name="logout">Logout</string>
 </resources>

@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/noEditToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title=""
+        app:titleTextColor="@color/colorWhite"
+        app:navigationIcon="@drawable/back_icon"
+        android:theme="@style/MyActionBarTheme">
+    </androidx.appcompat.widget.Toolbar>
 
     <androidx.appcompat.widget.ActionMenuView
         android:layout_width="wrap_content"
@@ -11,6 +22,7 @@
 
     <RelativeLayout
         android:id="@+id/mainInfo"
+        android:layout_below="@+id/noEditToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorBackground"

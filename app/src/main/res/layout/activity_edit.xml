@@ -5,8 +5,19 @@
     android:layout_height="match_parent"
     >
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/editToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title=""
+        app:titleTextColor="@color/colorWhite"
+        app:navigationIcon="@drawable/back_icon"
+        android:theme="@style/MyActionBarTheme">
+    </androidx.appcompat.widget.Toolbar>
+
     <RelativeLayout
         android:id="@+id/edit_profile_pictures"
+        android:layout_below="@+id/editToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorBackground"

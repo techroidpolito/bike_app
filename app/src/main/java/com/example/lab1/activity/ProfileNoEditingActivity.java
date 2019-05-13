@@ -6,16 +6,24 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.TextView;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.lab1.R;
 import com.example.lab1.model.ProfileInfo;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.FileNotFoundException;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -28,7 +36,12 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
     TextView tv_id;
     CircleImageView profile_civ;
     ProfileInfo profileInfo;
-    Button test_button;
+    Toolbar toolbar;
+    private DatabaseReference mFirebaseDatabase;
+    private FirebaseDatabase mFirebaseInstance;
+    private String bikerId;
+    private static final String TAG = ProfileNoEditingActivity.class.getSimpleName();
+
     final static int edit_request = 1;
 
     @Override
@@ -37,9 +50,13 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         profileInfo = new ProfileInfo();
+        if (getIntent().getStringExtra("bikerId") != null) {
+            bikerId = getIntent().getStringExtra("bikerId");
+        }
 
         if (savedInstanceState != null) {
-            profileInfo = new ProfileInfo( savedInstanceState.getStringArrayList("profile_info" ));
+            profileInfo = new ProfileInfo(Objects.requireNonNull(savedInstanceState.getStringArrayList("profile_info")));
+            bikerId = savedInstanceState.getString("bikerId");
         }
 
         tv_username = findViewById(R.id.userName);
@@ -49,7 +66,14 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
         tv_address = findViewById(R.id.address);
         tv_id = findViewById(R.id.identityDocument);
         profile_civ = findViewById(R.id.profilePicture);
-        test_button = findViewById(R.id.testButton);
+        toolbar = findViewById(R.id.noEditToolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        mFirebaseInstance = FirebaseDatabase.getInstance();
+        mFirebaseInstance.getReference("app_title").setValue(R.string.app_name);
+        mFirebaseDatabase = mFirebaseInstance.getReference("bikers");
 
         if (profileInfo.isAlready_filled()){
             String username = profileInfo.getUsername();
@@ -120,6 +144,9 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
 
                 Uri pp_uri = Uri.parse(profileInfo.getProfile_picture_uri());
                 setProfilePicture(pp_uri);
+
+                //database update
+                updateUser();
             }
         }
     }
@@ -128,6 +155,7 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
     protected void onSaveInstanceState (Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putStringArrayList("profile_info",profileInfo.toArrayList());
+        outState.putString("bikerId",bikerId);
     }
 
     @Override
@@ -145,6 +173,7 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
                     ProfileNoEditingActivity.this,
                     ProfileEditingActivity.class);
             editing_intent.putExtra("profile_info",profileInfo.toArrayList());
+            editing_intent.putExtra("bikerId",bikerId);
             startActivityForResult(editing_intent, edit_request);
         }
         return(super.onOptionsItemSelected(item));
@@ -161,5 +190,49 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * User data change listener
+     */
+    private void addUserChangeListener() {
+        // User data change listener
+        mFirebaseDatabase.child(bikerId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ProfileInfo biker = dataSnapshot.getValue(ProfileInfo.class);
+
+                // Check for null
+                if (biker == null) {
+                    Log.e(TAG, "User data is null!");
+                    return;
+                }
+
+                Log.e(TAG, "User data is changed!");
+
+                profileInfo = biker;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.e(TAG, "Failed to read user", error.toException());
+            }
+        });
+    }
+
+    /**
+     * Creating new user node under 'users'
+     */
+    private void updateUser() {
+        // TODO
+        // In real apps this userId should be fetched
+        // by implementing firebase auth
+        if (TextUtils.isEmpty(bikerId)) {
+            bikerId = mFirebaseDatabase.push().getKey();
+            Log.e("Unexpected behavior","asked for a new bikerId");
+        }
+
+        mFirebaseDatabase.child(bikerId).setValue(profileInfo);
+        addUserChangeListener();
+    }
 
 }

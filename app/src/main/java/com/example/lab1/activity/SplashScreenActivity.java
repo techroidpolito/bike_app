@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashScreenActivity extends AppCompatActivity {
     private static int SPLASH_TIME_OUT = 3000;
+    private String bikerId = "-LekCKKXmgY2Jgrudoz3";
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splashscreen);
@@ -31,7 +32,8 @@ public class SplashScreenActivity extends AppCompatActivity {
             public void run() {
                 // This method will be executed once the timer is over
                 // Start your app main activity
-                Intent i = new Intent(SplashScreenActivity.this, DashboardActivity.class);
+                Intent i = new Intent(SplashScreenActivity.this, PendingRequestActivity.class);
+                i.putExtra("bikerId",bikerId);
                 startActivity(i);
 
                 // close this activity

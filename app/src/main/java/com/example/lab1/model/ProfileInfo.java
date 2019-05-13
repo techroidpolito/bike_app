@@ -1,8 +1,9 @@
 package com.example.lab1.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ProfileInfo {
+public class ProfileInfo implements Serializable {
     private String username;
     private String phone_nb;
     private String email_address;
