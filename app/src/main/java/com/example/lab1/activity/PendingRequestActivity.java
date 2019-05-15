@@ -37,6 +37,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class PendingRequestActivity extends AppCompatActivity implements AcceptClickItemListener, RejectClickItemListener {
@@ -47,7 +48,7 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
     private DrawerLayout dLayout;
     private LinearLayout headerView;
     private TextView drawerTv;
-    private ImageView drawerIv;
+    private CircleImageView drawerIv;
     private PendingRequestAdapter mAdapter;
     private ArrayList<PendingRequestAdapterModel> pendingRequestAdapterModel;
     private RecyclerView.LayoutManager mLayoutManager;

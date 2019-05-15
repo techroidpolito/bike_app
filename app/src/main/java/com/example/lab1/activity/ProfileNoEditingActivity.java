@@ -23,7 +23,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.FileNotFoundException;
-import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -49,13 +48,11 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        profileInfo = new ProfileInfo();
+        //profileInfo = new ProfileInfo();
         if (getIntent().getStringExtra("bikerId") != null) {
             bikerId = getIntent().getStringExtra("bikerId");
-        }
-
-        if (savedInstanceState != null) {
-            profileInfo = new ProfileInfo(Objects.requireNonNull(savedInstanceState.getStringArrayList("profile_info")));
+        } else if (savedInstanceState != null) {
+            //profileInfo = new ProfileInfo(Objects.requireNonNull(savedInstanceState.getStringArrayList("profile_info")));
             bikerId = savedInstanceState.getString("bikerId");
         }
 
@@ -71,11 +68,23 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
 
         mFirebaseInstance = FirebaseDatabase.getInstance();
         mFirebaseInstance.getReference("app_title").setValue(R.string.app_name);
-        mFirebaseDatabase = mFirebaseInstance.getReference("bikers");
+        mFirebaseDatabase = mFirebaseInstance.getReference("bikers").child(bikerId);
+        mFirebaseDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange( DataSnapshot dataSnapshot) {
+                profileInfo = dataSnapshot.getValue(ProfileInfo.class);
+                setInformation();
+            }
 
-        if (profileInfo.isAlready_filled()){
-            setInformation();
-        }
+            @Override
+            public void onCancelled( DatabaseError databaseError) {
+                Log.e("The read failed ", databaseError.getMessage());
+            }
+        });
+
+        //if (profileInfo.isAlready_filled()){
+            //setInformation();
+        //}
 
     }
 
@@ -169,7 +178,7 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
      */
     private void addUserChangeListener() {
         // User data change listener
-        mFirebaseDatabase.child(bikerId).addValueEventListener(new ValueEventListener() {
+        mFirebaseDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ProfileInfo biker = dataSnapshot.getValue(ProfileInfo.class);
@@ -205,7 +214,7 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
             Log.e("Unexpected behavior","asked for a new bikerId");
         }
 
-        mFirebaseDatabase.child(bikerId).setValue(profileInfo);
+        mFirebaseDatabase.setValue(profileInfo);
         addUserChangeListener();
     }
 

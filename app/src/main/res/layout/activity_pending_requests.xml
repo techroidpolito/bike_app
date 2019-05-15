@@ -42,9 +42,10 @@
             <ImageView
                 android:id="@+id/orderImg"
                 android:layout_width="100dp"
-                android:layout_height="75dp"
+                android:layout_height="100dp"
                 app:srcCompat="@drawable/empty_icon"
-                android:layout_centerInParent= "true"/>
+                android:layout_centerInParent= "true">
+            </ImageView>
             <TextView
                 android:id="@+id/exceptionTv"
                 android:layout_width="match_parent"
