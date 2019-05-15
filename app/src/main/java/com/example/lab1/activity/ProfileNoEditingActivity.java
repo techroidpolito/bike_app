@@ -68,41 +68,13 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
         profile_civ = findViewById(R.id.profilePicture);
         toolbar = findViewById(R.id.noEditToolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         mFirebaseInstance = FirebaseDatabase.getInstance();
         mFirebaseInstance.getReference("app_title").setValue(R.string.app_name);
         mFirebaseDatabase = mFirebaseInstance.getReference("bikers");
 
         if (profileInfo.isAlready_filled()){
-            String username = profileInfo.getUsername();
-            if (!username.equals("")) {
-                tv_username.setText(username);
-            }
-            String phone_nb = profileInfo.getPhone_nb();
-            if (!phone_nb.equals("")) {
-                tv_phone_nb.setText(phone_nb);
-            }
-            String email_address = profileInfo.getEmail_address();
-            if (!email_address.equals("")) {
-                tv_email_address.setText(email_address);
-            }
-            String address = profileInfo.getAddress();
-            if (!address.equals("")) {
-                tv_address.setText(address);
-            }
-            String description = profileInfo.getDescription();
-            if (!description.equals("")) {
-                tv_description.setText(description);
-            }
-            String identity_document = profileInfo.getIdentity_document();
-            if (!identity_document.equals("")) {
-                tv_id.setText(identity_document);
-            }
-
-            Uri pp_uri = Uri.parse(profileInfo.getProfile_picture_uri());
-            setProfilePicture(pp_uri);
+            setInformation();
         }
 
     }
@@ -116,39 +88,41 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
             if (action_type.equals("save")){
                 profileInfo = new ProfileInfo(data.getStringArrayListExtra("profile_info"));
 
-                //Check if each field is not empty
-                String username = profileInfo.getUsername();
-                if (!username.equals("")) {
-                    tv_username.setText(username);
-                }
-                String phone_nb = profileInfo.getPhone_nb();
-                if (!phone_nb.equals("")) {
-                    tv_phone_nb.setText(phone_nb);
-                }
-                String email_address = profileInfo.getEmail_address();
-                if (!email_address.equals("")) {
-                    tv_email_address.setText(email_address);
-                }
-                String address = profileInfo.getAddress();
-                if (!address.equals("")) {
-                    tv_address.setText(address);
-                }
-                String description = profileInfo.getDescription();
-                if (!description.equals("")) {
-                    tv_description.setText(description);
-                }
-                String identity_document = profileInfo.getIdentity_document();
-                if (!identity_document.equals("")) {
-                    tv_id.setText(identity_document);
-                }
-
-                Uri pp_uri = Uri.parse(profileInfo.getProfile_picture_uri());
-                setProfilePicture(pp_uri);
-
-                //database update
-                updateUser();
+                setInformation();
+                updateUser(); //database update
             }
         }
+    }
+
+    private void setInformation(){
+        //Check if each field is not empty
+        String username = profileInfo.getUsername();
+        if (!username.equals("")) {
+            tv_username.setText(username);
+        }
+        String phone_nb = profileInfo.getPhone_nb();
+        if (!phone_nb.equals("")) {
+            tv_phone_nb.setText(phone_nb);
+        }
+        String email_address = profileInfo.getEmail_address();
+        if (!email_address.equals("")) {
+            tv_email_address.setText(email_address);
+        }
+        String address = profileInfo.getAddress();
+        if (!address.equals("")) {
+            tv_address.setText(address);
+        }
+        String description = profileInfo.getDescription();
+        if (!description.equals("")) {
+            tv_description.setText(description);
+        }
+        String identity_document = profileInfo.getIdentity_document();
+        if (!identity_document.equals("")) {
+            tv_id.setText(identity_document);
+        }
+
+        Uri pp_uri = Uri.parse(profileInfo.getProfile_picture_uri());
+        setProfilePicture(pp_uri);
     }
 
     @Override

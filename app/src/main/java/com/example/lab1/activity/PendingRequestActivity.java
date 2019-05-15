@@ -59,11 +59,8 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pending_requests);
-        bikerId = getIntent().getStringExtra("bikerId");
         toolbar = findViewById(R.id.homeToolbar);
         setSupportActionBar(toolbar);
-        bikerReference = FirebaseDatabase.getInstance().getReference("bikers").child(bikerId);
-        setNavigationDrawer();
         userRecyclerView = findViewById(R.id.pendingRequestsRecyclerView);
         exceptionRl = findViewById(R.id.exceptionRl);
 
@@ -76,10 +73,18 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
                 exceptionRl.setVisibility(View.VISIBLE);
                 userRecyclerView.setVisibility(View.GONE);
             }
+
+            bikerId = savedInstanceState.getString("bikerId");
         }
         else {
             setAdapterItem();
         }
+
+        if (bikerId == null){
+            bikerId = getIntent().getStringExtra("bikerId");
+        }
+        bikerReference = FirebaseDatabase.getInstance().getReference("bikers").child(bikerId);
+        setNavigationDrawer();
     }
 
     private void setNavigationDrawer() {
@@ -164,6 +169,7 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putSerializable("requests", pendingRequestAdapterModel);
+        outState.putString("bikerId",bikerId);
     }
 
     @Override

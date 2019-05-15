@@ -96,7 +96,7 @@ public class ProfileEditingActivity extends AppCompatActivity {
             setProfilePicture(pp_uri);
         }
 
-        /*
+
         edit_picture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,7 +105,7 @@ public class ProfileEditingActivity extends AppCompatActivity {
                 startActivityForResult(intent, picture_request_code);
             }
         });
-        */
+
     }
 
     @Override
