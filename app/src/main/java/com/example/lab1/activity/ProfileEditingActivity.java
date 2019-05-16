@@ -29,7 +29,7 @@ import com.example.lab1.model.ProfileInfo;
 
 public class ProfileEditingActivity extends AppCompatActivity {
     private ImageButton edit_picture;
-    private EditText username_et, email_address_et, phone_nb_et, description_et, address_et, id_et;
+    private EditText first_name_et, last_name_et, email_address_et, phone_nb_et, description_et, id_et;
     private CircleImageView profileImage;
     private Toolbar toolbar;
     private Uri imageUri;
@@ -54,11 +54,11 @@ public class ProfileEditingActivity extends AppCompatActivity {
 
         edit_picture = findViewById(R.id.edit_profile_picture_button);
         registerForContextMenu(edit_picture);
-        username_et = findViewById(R.id.edit_username);
+        first_name_et = findViewById(R.id.edit_firstName);
+        last_name_et = findViewById(R.id.edit_lastName);
         email_address_et = findViewById(R.id.edit_email_address);
         phone_nb_et = findViewById(R.id.edit_phone_number);
         description_et = findViewById(R.id.edit_short_description);
-        address_et = findViewById(R.id.edit_address);
         id_et = findViewById(R.id.edit_identity_document);
         profileImage = findViewById(R.id.edit_profile_picture);
         toolbar = findViewById(R.id.editToolbar);
@@ -68,9 +68,13 @@ public class ProfileEditingActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         if (profileInfo.isAlready_filled()){
-            String username = profileInfo.getUsername();
-            if (!username.equals("")) {
-                username_et.setText(username);
+            String firstname = profileInfo.getFirstName();
+            if (!firstname.equals("")) {
+                first_name_et.setText(firstname);
+            }
+            String lastname = profileInfo.getLastName();
+            if (!lastname.equals("")) {
+                last_name_et.setText(lastname);
             }
             String phone_nb = profileInfo.getPhone_nb();
             if (!phone_nb.equals("")) {
@@ -79,10 +83,6 @@ public class ProfileEditingActivity extends AppCompatActivity {
             String email_address = profileInfo.getEmail_address();
             if (!email_address.equals("")) {
                 email_address_et.setText(email_address);
-            }
-            String address = profileInfo.getAddress();
-            if (!address.equals("")) {
-                address_et.setText(address);
             }
             String description = profileInfo.getDescription();
             if (!description.equals("")) {
@@ -146,14 +146,14 @@ public class ProfileEditingActivity extends AppCompatActivity {
                 //finish();
 
             case R.id.saveButton:
-                String username = username_et.getText().toString();
-                profileInfo.setUsername(username);
+                String firstname = first_name_et.getText().toString();
+                profileInfo.setFirstName(firstname);
+                String lastname = last_name_et.getText().toString();
+                profileInfo.setLastName(lastname);
                 String phone_nb = phone_nb_et.getText().toString();
                 profileInfo.setPhone_nb(phone_nb);
                 String email_address = email_address_et.getText().toString();
                 profileInfo.setEmail_address(email_address);
-                String address = address_et.getText().toString();
-                profileInfo.setAddress(address);
                 String description = description_et.getText().toString();
                 profileInfo.setDescription(description);
                 String identity_document = id_et.getText().toString();

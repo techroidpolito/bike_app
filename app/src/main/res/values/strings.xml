@@ -31,4 +31,6 @@
     <string name="order_delivered">I delivered the order</string>
     <string name="profile">Profile</string>
     <string name="logout">Logout</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
 </resources>

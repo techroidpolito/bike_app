@@ -117,10 +117,6 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
         if (!email_address.equals("")) {
             tv_email_address.setText(email_address);
         }
-        String address = profileInfo.getAddress();
-        if (!address.equals("")) {
-            tv_address.setText(address);
-        }
         String description = profileInfo.getDescription();
         if (!description.equals("")) {
             tv_description.setText(description);

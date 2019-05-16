@@ -9,6 +9,8 @@ import android.widget.TextView;
 import com.example.lab1.R;
 import com.example.lab1.model.PendingRequestAdapterModel;
 import com.google.android.gms.maps.MapView;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -48,6 +50,8 @@ public class RidingToClientActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(RidingToClientActivity.this, PendingRequestActivity.class);
                 i.putExtra("bikerId",bikerId);
+                DatabaseReference bikerReference = FirebaseDatabase.getInstance().getReference("bikers").child(bikerId);
+                bikerReference.child("isFree").setValue(true);
                 startActivity(i);
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 finish();
@@ -76,7 +80,7 @@ public class RidingToClientActivity extends AppCompatActivity {
         hiddenCv.setVisibility(View.GONE);
 
         deliveredButton.setText(R.string.order_delivered);
-        if( deliveryAdapterModel.getClientDistance() < 1.0 ){ //condition to adapt to the distance unit
+        if( deliveryAdapterModel.getClientDistance() < 50.0 ){ //condition to adapt to the distance unit
             deliveredButton.setVisibility(View.VISIBLE);
         } else {
             deliveredButton.setVisibility(View.GONE);

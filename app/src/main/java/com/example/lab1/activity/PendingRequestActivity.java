@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -85,6 +84,7 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
             bikerId = getIntent().getStringExtra("bikerId");
         }
         bikerReference = FirebaseDatabase.getInstance().getReference("bikers").child(bikerId);
+        bikerReference.child("isFree").setValue(true);
         setNavigationDrawer();
     }
 
@@ -182,6 +182,7 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
         Intent intent = new Intent(PendingRequestActivity.this, RidingToRestaurantActivity.class);
         intent.putExtra("info",pendingRequestAdapterModel.get(position));
         intent.putExtra("bikerId",bikerId);
+        bikerReference.child("isFree").setValue(false);
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
