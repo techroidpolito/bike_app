@@ -1,6 +1,8 @@
 package com.example.lab1.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -32,6 +34,8 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -51,9 +55,11 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
     private PendingRequestAdapter mAdapter;
     private ArrayList<PendingRequestAdapterModel> pendingRequestAdapterModel;
     private RecyclerView.LayoutManager mLayoutManager;
-    public static final int ACCEPT_CODE = 1;
     private String bikerId;
     private DatabaseReference bikerReference;
+    private Uri profilePictureUri;
+    public static final int ACCEPT_CODE = 1;
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,8 +105,15 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ProfileInfo bikerprofile = dataSnapshot.getValue(ProfileInfo.class);
                 drawerTv.setText(bikerprofile.getUsername());
-                Uri pictureUri = Uri.parse(bikerprofile.getProfile_picture_uri());
-                setDrawerProfilePicture(pictureUri);
+                profilePictureUri = Uri.parse(bikerprofile.getProfile_picture_uri());
+                if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(PendingRequestActivity.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                } else {
+                    setDrawerProfilePicture(profilePictureUri);
+                }
             }
 
             @Override
@@ -191,6 +204,27 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
     public void onRejectClick(int position) {
         pendingRequestAdapterModel.get(position).setReject(true);
         mAdapter.notifyItemChanged(position);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    setDrawerProfilePicture(profilePictureUri);
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request.
+        }
     }
 
     private void setDrawerProfilePicture(Uri picture_uri){

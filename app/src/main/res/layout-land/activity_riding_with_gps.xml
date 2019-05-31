@@ -1,70 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/destinationCardView"
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_above="@+id/arrivalButton"
+        android:layout_alignParentTop="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="16dp">
 
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp">
-            <TextView
-                android:id="@+id/destinationName"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/cardViewsLl"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true"
-                android:layout_toLeftOf="@+id/destinationPhoneNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:lines="1"
-                android:maxLines="1"
-                android:textSize="18sp"
-                android:hint="@string/restaurant_name"/>
-            <TextView
-                android:id="@+id/destinationPhoneNumber"
-                android:layout_alignParentEnd="true"
-                android:layout_marginStart="8dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:lines="1"
-                android:maxLines="1"
-                android:textSize="18sp"
-                android:hint="@string/phone_number"/>
-            <TextView
-                android:id="@+id/destinationAddress"
-                android:layout_below="@+id/destinationName"
+                android:orientation="horizontal">
+
+                <include
+                    android:id="@+id/destinationCardView"
+                    layout="@layout/info_item"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_marginBottom="16dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    />
+
+                <include
+                    layout="@layout/info_item"
+                    android:id="@+id/clientInfoCardView"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_marginBottom="16dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    />
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/map_layout"
+                android:layout_below="@+id/cardViewsLl"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:lines="1"
-                android:maxLines="4"
-                android:textSize="18sp"
-                android:hint="@string/address"/>
+                android:layout_height="300dp"
+                android:background="@drawable/card_edge"
+                android:layout_marginBottom="16dp">
+
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.MapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    map:cameraBearing="112.5"
+                    map:cameraTilt="30"
+                    map:cameraZoom="15"
+                    map:mapType="normal"
+                    map:uiCompass="false"
+                    map:uiRotateGestures="true"
+                    map:uiScrollGestures="true"
+                    map:uiTiltGestures="true"
+                    map:uiZoomControls="true"
+                    map:uiZoomGestures="true" />
+            </FrameLayout>
 
         </RelativeLayout>
-    </androidx.cardview.widget.CardView>
-
-    <View
-        android:id="@+id/gpsView"
-        android:layout_below="@+id/destinationCardView"
-        android:layout_above="@+id/arrivalButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/card_bg"
-        android:layout_marginBottom="16dp">
-
-    </View>
+    </ScrollView>
 
     <Button
         android:id="@+id/arrivalButton"
         android:layout_alignParentBottom="true"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:background="@color/colorPrimary"
         android:text="@string/arrived"
-        android:textSize="18sp"/>
+        android:textAllCaps="false"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorWhite"/>
 
 </RelativeLayout>

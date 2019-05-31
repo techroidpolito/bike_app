@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -27,13 +28,29 @@
                 android:layout_marginBottom="16dp"
                 />
 
-            <com.google.android.gms.maps.MapView
-                android:id="@+id/gpsView"
+            <FrameLayout
+                android:id="@+id/map_layout"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:background="@drawable/card_edge"
-                android:layout_marginBottom="16dp">
-            </com.google.android.gms.maps.MapView>
+                android:layout_marginBottom="16dp">>
+
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.MapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    map:cameraBearing="112.5"
+                    map:cameraTilt="30"
+                    map:cameraZoom="15"
+                    map:mapType="normal"
+                    map:uiCompass="false"
+                    map:uiRotateGestures="true"
+                    map:uiScrollGestures="true"
+                    map:uiTiltGestures="true"
+                    map:uiZoomControls="true"
+                    map:uiZoomGestures="true"/>
+            </FrameLayout>
 
             <include
                 layout="@layout/info_item"
