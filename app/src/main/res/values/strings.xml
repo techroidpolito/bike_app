@@ -129,6 +129,7 @@
     <string name="order_status_6">Order picked up</string>
     <string name="order_status_7">Order delivered</string>
     <string name="order_status_8">Order cancelled</string>
+    <string name="order_status_9">Rider request</string>
 
 
     <string name="toast_image_intent_null">Image picker option is missing!</string>

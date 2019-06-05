@@ -1,6 +1,7 @@
 package com.example.lab1.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.lab1.FirebaseBackgroundService;
 import com.example.lab1.R;
 import com.example.lab1.adapter.PendingRequestAdapter;
 import com.example.lab1.model.PendingRequestAdapterModel;
@@ -76,7 +78,7 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 2;
     private static final String TAG = PendingRequestActivity.class.getSimpleName();
-
+    private SharedPreferences tokenpref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +95,7 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         getLocationPermission();
         getDeviceLocation();
-
+        tokenpref = getSharedPreferences("tokenpref",MODE_PRIVATE);
         if (savedInstanceState != null) {
             pendingRequestAdapterModel = (ArrayList<PendingRequestAdapterModel>) savedInstanceState.getSerializable("requests");
             if (pendingRequestAdapterModel != null && pendingRequestAdapterModel.size() > 0) {
@@ -107,10 +109,12 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
         } else {
             if (bikerId == null) {
                 bikerId = getIntent().getStringExtra(getString(R.string.bikerID));
+                Intent serviceIntent = new Intent(getApplicationContext(), FirebaseBackgroundService.class);
+                startService(serviceIntent);
             }
             setAdapterItem();
         }
-
+        bikerId = tokenpref.getString(getString(R.string.bid_id_pref), null);
         bikerStatusReference = FirebaseDatabase.getInstance().getReference(getString(R.string.biker_status)).child(bikerId);
         bikerReference = FirebaseDatabase.getInstance().getReference(getString(R.string.biker_details)).child(bikerId);
         bikerReference.child(getString(R.string.bikerIsAvailable)).setValue(true);
