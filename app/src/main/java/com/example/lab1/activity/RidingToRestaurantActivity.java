@@ -1,9 +1,11 @@
 package com.example.lab1.activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -45,7 +47,7 @@ public class RidingToRestaurantActivity extends AppCompatActivity implements OnM
     private Button arrivedButton;
     private CardView restaurantCv, clientCv;
     private MapFragment mapFragment;
-    private RelativeLayout clientPaymentRl;
+    private RelativeLayout clientPaymentRl, clientPhoneRl, restaurantPhoneRl;
     private TextView restaurantNameTv, restaurantAddressTv, restaurantPhoneNumberTv, paymentTypeTv, priceTv;
     private TextView clientNameTv, clientAddressTv, clientPhoneNumberTv;
     private PendingRequestAdapterModel pendingRequestAdapterModel;
@@ -63,6 +65,7 @@ public class RidingToRestaurantActivity extends AppCompatActivity implements OnM
     private GMapGeocode mg_c; //client
     private static final int DEFAULT_ZOOM = 15;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private static final int PERMISSION_REQUEST_CALL_PHONE = 2;
     private boolean mLocationPermissionGranted;
     // Keys for storing activity state.
     private static final String KEY_CAMERA_POSITION = "camera_position";
@@ -81,12 +84,17 @@ public class RidingToRestaurantActivity extends AppCompatActivity implements OnM
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             getSupportActionBar().hide();
         }
+
+        // Prompt the user for permission.
+        getLocationPermission();
+
         setContentView(R.layout.activity_riding_with_gps);
         arrivedButton = findViewById(R.id.arrivalButton);
         restaurantCv = findViewById(R.id.destinationCardView);
         restaurantNameTv = restaurantCv.findViewById(R.id.nameTextView);
         restaurantAddressTv = restaurantCv.findViewById(R.id.addressTextView);
         restaurantPhoneNumberTv = restaurantCv.findViewById(R.id.phoneNumberTextView);
+        restaurantPhoneRl = restaurantCv.findViewById(R.id.phoneNumberRelativeLayout);
         paymentTypeTv = restaurantCv.findViewById(R.id.paymentTypeTextView);
         priceTv = restaurantCv.findViewById(R.id.priceTextView);
         clientCv = findViewById(R.id.clientInfoCardView);
@@ -94,6 +102,7 @@ public class RidingToRestaurantActivity extends AppCompatActivity implements OnM
         clientAddressTv = clientCv.findViewById(R.id.addressTextView);
         clientPhoneNumberTv = clientCv.findViewById(R.id.phoneNumberTextView);
         clientPaymentRl = clientCv.findViewById(R.id.paymentRelativeLayout);
+        clientPhoneRl = clientCv.findViewById(R.id.phoneNumberRelativeLayout);
 
         arrivedButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,11 +154,48 @@ public class RidingToRestaurantActivity extends AppCompatActivity implements OnM
         } else {
             arrivedButton.setVisibility(View.GONE);
         }
+
+        restaurantPhoneRl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:"+pendingRequestAdapterModel.getRestaurantPhoneNumber()));
+
+                if (ActivityCompat.checkSelfPermission(RidingToRestaurantActivity.this,
+                        Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+
+                    ActivityCompat.requestPermissions(RidingToRestaurantActivity.this,
+                            new String[]{Manifest.permission.CALL_PHONE},
+                            PERMISSION_REQUEST_CALL_PHONE);
+                    return;
+                }
+                startActivity(callIntent);
+            }
+        });
+
+        clientPhoneRl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:"+pendingRequestAdapterModel.getClientPhoneNumber()));
+
+                if (ActivityCompat.checkSelfPermission(RidingToRestaurantActivity.this,
+                        Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+
+                    ActivityCompat.requestPermissions(RidingToRestaurantActivity.this,
+                            new String[]{Manifest.permission.CALL_PHONE},
+                            PERMISSION_REQUEST_CALL_PHONE);
+                    return;
+                }
+                startActivity(callIntent);
+            }
+        });
     }
 
     private void setRestaurantCoordinates() {
-        String restaurantAddress = pendingRequestAdapterModel.getRestaurantAddress();
-        LatLng restaurant_coordinates = null;
+        //String restaurantAddress = pendingRequestAdapterModel.getRestaurantAddress();
+        mRestaurantLocation = new LatLng(pendingRequestAdapterModel.getRestaurantLatitude(),pendingRequestAdapterModel.getRestaurantLongitude());
+        /*LatLng restaurant_coordinates = null;
         String[] info = {restaurantAddress};
         try {
             restaurant_coordinates = mg_r.execute(info).get();
@@ -164,12 +210,13 @@ public class RidingToRestaurantActivity extends AppCompatActivity implements OnM
             Log.d("coordinates are null", String.valueOf(false));
             Log.d("coordinates", String.valueOf(restaurant_coordinates));
             mRestaurantLocation = restaurant_coordinates;
-        }
+        }*/
     }
 
     private void setClientCoordinates() {
-        String clientAddress = pendingRequestAdapterModel.getClientAddress();
-        LatLng client_coordinates = null;
+        //String clientAddress = pendingRequestAdapterModel.getClientAddress();
+        mClientLocation = new LatLng(pendingRequestAdapterModel.getClientLatitude(),pendingRequestAdapterModel.getClientLongitude());
+        /*LatLng client_coordinates = null;
         String[] info = {clientAddress};
         try {
             client_coordinates = mg_c.execute(info).get();
@@ -184,7 +231,7 @@ public class RidingToRestaurantActivity extends AppCompatActivity implements OnM
             Log.d("coordinates are null", String.valueOf(false));
             Log.d("coordinates", String.valueOf(client_coordinates));
             mClientLocation = client_coordinates;
-        }
+        }*/
     }
 
     @Override
@@ -195,6 +242,7 @@ public class RidingToRestaurantActivity extends AppCompatActivity implements OnM
         outState.putParcelable("restaurant_coordinates",mRestaurantLocation);
         outState.putParcelable("client_coordinates",mClientLocation);
     }
+
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -213,9 +261,6 @@ public class RidingToRestaurantActivity extends AppCompatActivity implements OnM
         googleMap.addMarker(new MarkerOptions().position(mRestaurantLocation).title(pendingRequestAdapterModel.getRestaurantName()));
         googleMap.addMarker(new MarkerOptions().position(mClientLocation).title(pendingRequestAdapterModel.getClientName()));
         mMap = googleMap;
-
-        // Prompt the user for permission.
-        getLocationPermission();
 
         // Turn on the My Location layer and the related control on the map.
         updateLocationUI();
@@ -306,7 +351,7 @@ public class RidingToRestaurantActivity extends AppCompatActivity implements OnM
                             } else {
                                 Log.d("is null", String.valueOf(false));
                                 ArrayList<LatLng> directionPoint = md.getDirection(doc);
-                                PolylineOptions rectLine = new PolylineOptions().width(10).color(Color.GREEN);
+                                PolylineOptions rectLine = new PolylineOptions().width(10).color(0xff9473b6);
                                 Log.v("nb steps", String.valueOf(directionPoint.size()));
 
                                 for (int i = 0; i < directionPoint.size(); i++) {

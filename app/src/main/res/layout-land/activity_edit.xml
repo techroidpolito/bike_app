@@ -107,16 +107,6 @@
                     android:hint="@string/address"
                     />
 
-                <EditText
-                    android:id="@+id/edit_identity_document"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/edit_short_description"
-                    android:layout_marginBottom="16dp"
-                    android:inputType="number"
-                    android:hint="@string/identity_document"
-                    />
-
             </RelativeLayout>
 
         </ScrollView>

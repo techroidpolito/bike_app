@@ -1,13 +1,15 @@
 package com.example.lab1.activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.lab1.GMapGeocode;
@@ -45,7 +47,9 @@ public class RidingToClientActivity extends AppCompatActivity implements OnMapRe
     private CardView clientCv, hiddenCv;
     private MapFragment mapFragment;
     private TextView clientNameTv, clientAddressTv, clientPhoneNumberTv, paymentTypeTv, priceTv, orderNumberTv;
+    private RelativeLayout clientPhoneRl;
     private PendingRequestAdapterModel deliveryAdapterModel;
+    private DatabaseReference orderReference;
     private String bikerId;
 
     private static final String TAG = RidingToClientActivity.class.getSimpleName();
@@ -58,6 +62,7 @@ public class RidingToClientActivity extends AppCompatActivity implements OnMapRe
     private GMapGeocode mg;
     private static final int DEFAULT_ZOOM = 15;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private static final int PERMISSION_REQUEST_CALL_PHONE = 2;
     private boolean mLocationPermissionGranted;
     // Keys for storing activity state.
     private static final String KEY_CAMERA_POSITION = "camera_position";
@@ -84,6 +89,7 @@ public class RidingToClientActivity extends AppCompatActivity implements OnMapRe
         clientNameTv = clientCv.findViewById(R.id.nameTextView);
         clientAddressTv = clientCv.findViewById(R.id.addressTextView);
         clientPhoneNumberTv = clientCv.findViewById(R.id.phoneNumberTextView);
+        clientPhoneRl = clientCv.findViewById(R.id.phoneNumberRelativeLayout);
         paymentTypeTv = clientCv.findViewById(R.id.paymentTypeTextView);
         priceTv = clientCv.findViewById(R.id.priceTextView);
         orderNumberTv = clientCv.findViewById(R.id.orderNumberTextview);
@@ -97,19 +103,6 @@ public class RidingToClientActivity extends AppCompatActivity implements OnMapRe
         md = new GMapV2Direction(getResources().getString(R.string.google_direction_key), getApplicationContext());
         mg = new GMapGeocode(getResources().getString(R.string.google_api_key), getApplicationContext());
 
-        deliveredButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(RidingToClientActivity.this, PendingRequestActivity.class);
-                i.putExtra("bikerId",bikerId);
-                DatabaseReference bikerReference = FirebaseDatabase.getInstance().getReference("bikers").child(bikerId);
-                bikerReference.child("isFree").setValue(true);
-                startActivity(i);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                finish();
-            }
-        });
-
         if(getIntent().getSerializableExtra("info")!=null){
             deliveryAdapterModel = (PendingRequestAdapterModel) getIntent().getSerializableExtra("info");
             setInfo();
@@ -118,6 +111,23 @@ public class RidingToClientActivity extends AppCompatActivity implements OnMapRe
         if (savedInstanceState == null) {
             setClientCoordinates();
         }
+
+        orderReference = FirebaseDatabase.getInstance().getReference(getString(R.string.order_details)).child( deliveryAdapterModel.getOrder_id() );
+
+        deliveredButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                orderReference.child(getString(R.string.order_status)).setValue(String.valueOf(7)); //6 = order delivered
+                orderReference.child(getString(R.string.delivered_status)).setValue(String.valueOf(true));
+
+                Intent i = new Intent(RidingToClientActivity.this, PendingRequestActivity.class);
+                i.putExtra(getString(R.string.bikerID),bikerId);
+                startActivity(i);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                finish();
+            }
+        });
+
     }
 
     private void setInfo() {
@@ -139,10 +149,30 @@ public class RidingToClientActivity extends AppCompatActivity implements OnMapRe
         } else {
             deliveredButton.setVisibility(View.GONE);
         }
+
+        clientPhoneRl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:"+deliveryAdapterModel.getClientPhoneNumber()));
+
+                if (ActivityCompat.checkSelfPermission(RidingToClientActivity.this,
+                        Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+
+                    ActivityCompat.requestPermissions(RidingToClientActivity.this,
+                            new String[]{Manifest.permission.CALL_PHONE},
+                            PERMISSION_REQUEST_CALL_PHONE);
+                    return;
+                }
+                startActivity(callIntent);
+            }
+        });
     }
 
     private void setClientCoordinates(){
-        String clientAddress = deliveryAdapterModel.getClientAddress();
+        //String clientAddress = deliveryAdapterModel.getClientAddress();
+        mClientLocation = new LatLng(deliveryAdapterModel.getClientLatitude(),deliveryAdapterModel.getClientLongitude());
+        /*
         LatLng client_coordinates = null;
         String[] info = {clientAddress};
         try {
@@ -158,7 +188,7 @@ public class RidingToClientActivity extends AppCompatActivity implements OnMapRe
             Log.d("coordinates are null", String.valueOf(false));
             Log.d("coordinates", String.valueOf(client_coordinates));
             mClientLocation = client_coordinates;
-        }
+        }*/
     }
 
     @Override
@@ -269,14 +299,13 @@ public class RidingToClientActivity extends AppCompatActivity implements OnMapRe
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                            //ArrayList<LatLng> directionPoint = md.getDirection(doc);
-                            //Log.d("doctype", String.valueOf(doc.getDoctype()));
+
                             if (doc == null){
                                 Log.d("is null", String.valueOf(true));
                             } else {
                                 Log.d("is null", String.valueOf(false));
                                 ArrayList<LatLng> directionPoint = md.getDirection(doc);
-                                PolylineOptions rectLine = new PolylineOptions().width(10).color(Color.GREEN);
+                                PolylineOptions rectLine = new PolylineOptions().width(10).color(0xff9473b6);
                                 Log.v("nb steps", String.valueOf(directionPoint.size()));
 
                                 for (int i = 0; i < directionPoint.size(); i++) {

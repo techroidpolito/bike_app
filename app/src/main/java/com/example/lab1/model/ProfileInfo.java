@@ -2,70 +2,37 @@ package com.example.lab1.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+
+// to update !!
 
 public class ProfileInfo implements Serializable {
+    private String bikerID;
     private String username;
     private String firstName;
     private String lastName;
     private String phone_nb;
     private String email_address;
     private String description;
-    private String identity_document;
+    private String codice_fiscale;
     private String profile_picture_uri;
-    private String background_picture_uri;
     private boolean already_filled;
-    private boolean isFree;
-    private double[] current_position = new double[2];
+    private boolean isAvailable;
+    private String latitude;
+    private String longitude;
     private Float starsRating;
     private Float kmCounter;
     private Float moneyCounter;
+    private Boolean biker_completed = false;
 
-    public Float getKmCounter() {
-        return kmCounter;
+    public ProfileInfo(){ }
+
+    public String getCodiceFiscale() {
+        return codice_fiscale;
     }
 
-    public void setKmCounter(Float kmCounter) {
-        this.kmCounter = kmCounter;
-    }
-
-    public Float getMoneyCounter() {
-        return moneyCounter;
-    }
-
-    public void setMoneyCounter(Float moneyCounter) {
-        this.moneyCounter = moneyCounter;
-    }
-
-    public ProfileInfo(){
-        this.firstName = "";
-        this.lastName = "";
-        this.username = firstName + " " + lastName;
-        this.phone_nb = "";
-        this.email_address = "";
-        this.description = "";
-        this.identity_document = "";
-        this.profile_picture_uri = "";
-        this.background_picture_uri = "";
-        this.already_filled = false;
-        this.isFree = true;
-        this.current_position[0] = 0.0;
-        this.current_position[1] = 0.0;
-        this.starsRating = Float.valueOf(4);
-    }
-
-    public ProfileInfo(ArrayList<String> arrayList){
-        this.firstName = arrayList.get(0);
-        this.lastName = arrayList.get(1);
-        this.username = firstName + " " + lastName;
-        this.phone_nb = arrayList.get(2);
-        this.email_address = arrayList.get(3);
-        //this.current_location
-        this.description = arrayList.get(5);
-        this.identity_document = arrayList.get(6);
-        this.profile_picture_uri = arrayList.get(7);
-        this.background_picture_uri = arrayList.get(8);
-        this.already_filled = true;
-        this.isFree = true;
+    public void setCodiceFiscale(String codice_fiscale) {
+        this.codice_fiscale = codice_fiscale;
     }
 
     public String getFirstName() {
@@ -86,20 +53,12 @@ public class ProfileInfo implements Serializable {
         updateUsername();
     }
 
-    public boolean isFree() {
-        return isFree;
+    public boolean isAvailable() {
+        return isAvailable;
     }
 
-    public void setFree(boolean free) {
-        isFree = free;
-    }
-
-    public double[] getCurrent_position() {
-        return current_position;
-    }
-
-    public void setCurrent_position(double[] current_position) {
-        this.current_position = current_position;
+    public void setAvailable(boolean available) {
+        isAvailable = available;
     }
 
     public Float getStarsRating() {
@@ -142,28 +101,12 @@ public class ProfileInfo implements Serializable {
         return description;
     }
 
-    public void setIdentity_document(String identity_document) {
-        this.identity_document = identity_document;
-    }
-
-    public String getIdentity_document() {
-        return identity_document;
-    }
-
     public void setProfile_picture_uri(String profile_picture_uri) {
         this.profile_picture_uri = profile_picture_uri;
     }
 
     public String getProfile_picture_uri() {
         return profile_picture_uri;
-    }
-
-    public void setBackground_picture_uri(String background_picture_uri) {
-        this.background_picture_uri = background_picture_uri;
-    }
-
-    public String getBackground_picture_uri() {
-        return background_picture_uri;
     }
 
     public void setAlready_filled(boolean already_filled) {
@@ -174,18 +117,82 @@ public class ProfileInfo implements Serializable {
         return already_filled;
     }
 
+    public Float getKmCounter() {
+        return kmCounter;
+    }
+
+    public void setKmCounter(Float kmCounter) {
+        this.kmCounter = kmCounter;
+    }
+
+    public Float getMoneyCounter() {
+        return moneyCounter;
+    }
+
+    public void setMoneyCounter(Float moneyCounter) {
+        this.moneyCounter = moneyCounter;
+    }
+
+    public String getBikerID() {
+        return bikerID;
+    }
+
+    public void setBikerID(String bikerID) {
+        this.bikerID = bikerID;
+    }
+
+    public Boolean getBiker_completed() {
+        return biker_completed;
+    }
+
+    public void setBiker_completed(Boolean biker_completed) {
+        this.biker_completed = biker_completed;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public ProfileInfo(ArrayList<String> arrayList){
+        this.firstName = arrayList.get(0);
+        this.lastName = arrayList.get(1);
+        this.username = firstName + " " + lastName;
+        this.phone_nb = arrayList.get(2);
+        this.email_address = arrayList.get(3);
+        this.codice_fiscale = arrayList.get(4);
+        this.description = arrayList.get(5);
+        this.profile_picture_uri = arrayList.get(6);
+        this.isAvailable = Boolean.parseBoolean(arrayList.get(7));
+        this.latitude = arrayList.get(8);
+        this.longitude = arrayList.get(9);
+        this.already_filled = true;
+        this.biker_completed = true;
+    }
+
     public ArrayList<String> toArrayList(){
         ArrayList<String> al = new ArrayList<String>();
         al.add(this.firstName);
         al.add(this.lastName);
         al.add(this.phone_nb);
         al.add(this.email_address);
-        al.add(""); //this.current_position
+        al.add(this.codice_fiscale);
         al.add(this.description);
-        al.add(identity_document);
-        al.add(profile_picture_uri);
-        al.add(background_picture_uri);
-
+        al.add(this.profile_picture_uri);
+        al.add(String.valueOf(this.isAvailable));
+        al.add(this.latitude);
+        al.add(this.longitude);
         return al;
     }
 }

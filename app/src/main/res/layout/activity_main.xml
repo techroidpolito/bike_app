@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         app:title=""
         app:titleTextColor="@color/colorWhite"
+        app:navigationIcon="@drawable/home_icon"
         android:theme="@style/MyActionBarTheme">
     </androidx.appcompat.widget.Toolbar>
 
@@ -28,7 +29,6 @@
         >
 
         <de.hdodenhof.circleimageview.CircleImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/profilePicture"
             android:layout_centerHorizontal="true"
             android:layout_width="96dp"
@@ -93,26 +93,13 @@
                 android:paddingTop="8dp"
                 android:layout_marginBottom="16dp"
                 />
+
             <TextView
-                android:id="@+id/address"
+                android:id="@+id/codiceFiscale"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/emailAddress"
-                android:text="@string/address"
-                android:background="@drawable/medium_card_background"
-                android:paddingBottom="24dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingTop="8dp"
-                android:layout_marginBottom="16dp"
-                android:lines="4"
-                />
-            <TextView
-                android:id="@+id/identityDocument"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/address"
-                android:text="@string/identity_document"
+                android:layout_below="@+id/emailAddress"
+                android:text="@string/codice_fiscale"
                 android:background="@drawable/small_card_background"
                 android:paddingBottom="24dp"
                 android:paddingLeft="16dp"
@@ -120,11 +107,12 @@
                 android:paddingTop="8dp"
                 android:layout_marginBottom="16dp"
                 />
+
             <TextView
                 android:id="@+id/shortDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/identityDocument"
+                android:layout_below="@id/codiceFiscale"
                 android:text="@string/short_description"
                 android:background="@drawable/medium_card_background"
                 android:paddingBottom="24dp"

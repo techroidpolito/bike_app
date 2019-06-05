@@ -3,14 +3,23 @@
     <string name="edit_button_description">To switch to edit mode</string>
     <string name="save_button_description">To save the edited information and exit the edit mode</string>
     <string name="cancel_button_description">To cancel the current change</string>
-    <string name="restaurant_name">Restaurant</string>
-    <string name="username">Username</string>
-    <string name="phone_number">Phone number</string>
-    <string name="email_address">Email Address</string>
-    <string name="short_description">Short Description</string>
-    <string name="address">Address</string>
-    <string name="identity_document">Identity Document</string>
-    <string name="profile_picture_description">Profile picture</string>
+
+    <string name="delivered_status">delivered_status</string>
+    <string name="rider_accepted">rider_accepted</string>
+    <string name="order_status">order_status</string>
+    <string name="restaurant_name">rest_name</string>
+    <string name="restaurant_address">rest_address</string>
+    <string name="restaurant_phone">rest_phone</string>
+    <string name="restaurant_latitude">rest_lat</string>
+    <string name="restaurant_longitude">rest_long</string>
+    <string name="customer_name">cust_name</string>
+    <string name="customer_address">cust_address</string>
+    <string name="customer_phone">cust_phone</string>
+    <string name="customer_latitude">cust_lat</string>
+    <string name="customer_longitude">cust_long</string>
+    <string name="payment_type">payment_type</string>
+    <string name="price">to_pay</string>
+
     <string name="save_button">Save</string>
     <string name="cancel_button">Cancel</string>
     <string name="edit_button">Edit</string>
@@ -29,8 +38,85 @@
     <string name="payment">Payment</string>
     <string name="order_test">Order n°1</string>
     <string name="order_delivered">I delivered the order</string>
-    <string name="profile">Profile</string>
     <string name="logout">Logout</string>
+    <string name="food_name">Food name</string>
+    <string name="quantity">Quantity :</string>
+
+    <string name="profile">Profile</string>
     <string name="first_name">First name</string>
     <string name="last_name">Last name</string>
+    <string name="username">Username</string>
+    <string name="phone_number">Phone number</string>
+    <string name="email_address">Email Address</string>
+    <string name="short_description">Short Description</string>
+    <string name="address">Address</string>
+    <string name="profile_picture_description">Profile picture</string>
+    <string name="profile_picture_uri">Profile picture uri</string>
+    <string name="codice_fiscale">Codice fiscale</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+
+    <string name="email_id_pref">email_id_pref</string>
+    <string name="password_id_pref">password_id_pref</string>
+    <string name="bid_id_pref">bid_id_pref</string>
+
+    <string name="minimum_password">Password too short, enter minimum 8 characters!</string>
+    <string name="enter_password">Enter password!</string>
+    <string name="password_mismatch">Password did not match</string>
+    <string name="email_validation">"[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"</string>
+    <string name="codice_fiscale_validation">"[A-Z]{6}+[0-9]{2}+[A-Z]{1}+[0-9]{2}+[A-Z]{1}+[0-9]{3}+[A-Z]{1}"</string>
+    <string name="path_image_uri">path</string>
+    <string name="biker_profile_image_folder">biker_profile/</string>
+    <string name="enter_email">"Enter email address!"</string>
+    <string name="enter_first_name">"Enter first name!"</string>
+    <string name="enter_last_name">"Enter last name!"</string>
+    <string name="enter_phone">"Enter phone number!"</string>
+    <string name="enter_codice_fiscale">"Enter codice fiscale!"</string>
+    <string name="bikerDetailsExp">User details not available.\nPlease provide the details</string>
+
+    <string name="biker_profile_data" translatable="false">biker_data</string>
+    <string name="biker_completed">biker_isCompleted</string>
+    <string name="biker_details">biker_details</string>
+    <string name="biker_status">biker_status</string>
+    <string name="empty_biker_value" translatable="false">empty_biker</string>
+    <string name="bikerID">biker_id</string>
+    <string name="bikerPhone">biker_phone</string>
+    <string name="bikerName">biker_name</string>
+    <string name="bikerFirstName">biker_firstname</string>
+    <string name="bikerLastName">biker_lastname</string>
+    <string name="bikerEmail">rider_email</string>
+    <string name="bikerCodiceFiscale">biker_codice_fiscale</string>
+    <string name="bikerDescription">biker_description</string>
+    <string name="bikerPictureUri">rider_photo_url</string>
+    <string name="bikerIsAvailable">biker_is_available</string>
+    <string name="bikerLatitude">biker_lat</string>
+    <string name="bikerLongitude">biker_long</string>
+
+    <string name="order_details">order_details</string>
+    <string name="order_id">order_id</string>
+    <string name="foodtype_id">foodType_id</string>
+    <string name="foodtype">foodType</string>
+
+    <string name="no_internet_connection">No internet connection!</string>
+    <string name="network_alert">No internet connection has been detected! Please, an internet connection is required. Do you want to check your internet settings now?</string>
+    <string name="action_sign_in_short">Register</string>
+    <string name="signup">Sign up</string>
+    <string name="btn_login">LOGIN</string>
+    <string name="btn_link_to_register">Not a member? Get registered now!</string>
+    <string name="btn_link_to_login">Already registered. Login Me!</string>
+
+    <string name="auth_failed">Authentication failed, check your email and password or sign up</string>
+    <string name="internal_error">Server Database Error!</string>
+    <string name="registered_successfully">Registered successfully.</string>
+    <string name="registration_failed">Registration failed.</string>
+    <string name="Uploading">Uploading....</string>
+    <string name="upload_failed">Upload failed</string>
+    <string name="upload_success">Uploaded Successfully.</string>
+
+    <string name="hint_email">Email</string>
+    <string name="hint_phoneNumber">Phone number</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_confirm_password">Confirm password</string>
+    <string name="hint_name">Full name</string>
+    <string name="data">Data</string>
 </resources>

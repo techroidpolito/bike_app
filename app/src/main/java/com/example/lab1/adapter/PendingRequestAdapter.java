@@ -89,7 +89,8 @@ public class PendingRequestAdapter extends RecyclerView.Adapter {
         pendingItemViewHolder = (PendingRequestAdapter.PendingItemViewHolder) holder;
         pendingItemViewHolder.restaurantNameTv.setText(pendingRequestAdapterModels.getRestaurantName());
         pendingItemViewHolder.restaurantAddressTv.setText(pendingRequestAdapterModels.getRestaurantAddress());
-        String distance = Float.toString(pendingRequestAdapterModels.getRestaurantDistance())+" km";
+        //distance = total biking distance in line of sight (lower bound of the real distance)
+        String distance = Float.toString(pendingRequestAdapterModels.getRestaurantDistance()+pendingRequestAdapterModels.getClientDistance())+" km";
         pendingItemViewHolder.distanceTv.setText(distance);
         pendingItemViewHolder.paymentTypeTv.setText(pendingRequestAdapterModels.getPaymentType());
         if (pendingRequestAdapterModels.getPaymentType().equals("Cash")){
