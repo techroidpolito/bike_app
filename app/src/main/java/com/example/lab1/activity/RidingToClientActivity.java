@@ -17,6 +17,8 @@ import com.example.lab1.GMapV2Direction;
 import com.example.lab1.R;
 import com.example.lab1.model.PendingRequestAdapterModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -46,7 +48,7 @@ public class RidingToClientActivity extends AppCompatActivity implements OnMapRe
     private Button deliveredButton;
     private CardView clientCv, hiddenCv;
     private MapFragment mapFragment;
-    private TextView clientNameTv, clientAddressTv, clientPhoneNumberTv, paymentTypeTv, priceTv, orderNumberTv;
+    private TextView clientNameTv, clientAddressTv, clientPhoneNumberTv, paymentTypeTv, priceTv;
     private RelativeLayout clientPhoneRl;
     private PendingRequestAdapterModel deliveryAdapterModel;
     private DatabaseReference orderReference;
@@ -60,6 +62,7 @@ public class RidingToClientActivity extends AppCompatActivity implements OnMapRe
     private LatLng mClientLocation = new LatLng(45.062450,7.662360); // student at Polito, by default
     private GMapV2Direction md;
     private GMapGeocode mg;
+    private LocationCallback locationCallback;
     private static final int DEFAULT_ZOOM = 15;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int PERMISSION_REQUEST_CALL_PHONE = 2;
@@ -92,10 +95,22 @@ public class RidingToClientActivity extends AppCompatActivity implements OnMapRe
         clientPhoneRl = clientCv.findViewById(R.id.phoneNumberRelativeLayout);
         paymentTypeTv = clientCv.findViewById(R.id.paymentTypeTextView);
         priceTv = clientCv.findViewById(R.id.priceTextView);
-        orderNumberTv = clientCv.findViewById(R.id.orderNumberTextview);
 
         // Construct a FusedLocationProviderClient.
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    // Update UI with location data
+                    // ...
+                }
+            };
+        };
 
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -117,8 +132,8 @@ public class RidingToClientActivity extends AppCompatActivity implements OnMapRe
         deliveredButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                orderReference.child(getString(R.string.order_status)).setValue(String.valueOf(7)); //6 = order delivered
-                orderReference.child(getString(R.string.delivered_status)).setValue(String.valueOf(true));
+                orderReference.child(getString(R.string.order_status)).setValue(getString(R.string.order_status_7)); //7 = order delivered
+                orderReference.child(getString(R.string.delivered_status)).setValue(true);
 
                 Intent i = new Intent(RidingToClientActivity.this, PendingRequestActivity.class);
                 i.putExtra(getString(R.string.bikerID),bikerId);
@@ -137,18 +152,11 @@ public class RidingToClientActivity extends AppCompatActivity implements OnMapRe
         paymentTypeTv.setText(deliveryAdapterModel.getPaymentType());
         String price = Float.toString(deliveryAdapterModel.getPrice()) + " € ";
         priceTv.setText(price);
-        orderNumberTv.setVisibility(View.VISIBLE);
-        String orderNumber = "Order n° " + Integer.toString(deliveryAdapterModel.getOrderNumber());
-        orderNumberTv.setText(orderNumber);
 
         hiddenCv.setVisibility(View.GONE);
 
         deliveredButton.setText(R.string.order_delivered);
-        if (deliveryAdapterModel.getClientDistance() < 50.0) { //condition to adapt to the distance unit
-            deliveredButton.setVisibility(View.VISIBLE);
-        } else {
-            deliveredButton.setVisibility(View.GONE);
-        }
+        deliveredButton.setVisibility(View.VISIBLE);
 
         clientPhoneRl.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -170,26 +178,9 @@ public class RidingToClientActivity extends AppCompatActivity implements OnMapRe
     }
 
     private void setClientCoordinates(){
-        //String clientAddress = deliveryAdapterModel.getClientAddress();
         mClientLocation = new LatLng(deliveryAdapterModel.getClientLatitude(),deliveryAdapterModel.getClientLongitude());
-        /*
-        LatLng client_coordinates = null;
-        String[] info = {clientAddress};
-        try {
-            client_coordinates = mg.execute(info).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if (client_coordinates == null){
-            Log.d("coordinates are null", String.valueOf(true));
-        } else {
-            Log.d("coordinates are null", String.valueOf(false));
-            Log.d("coordinates", String.valueOf(client_coordinates));
-            mClientLocation = client_coordinates;
-        }*/
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -301,9 +292,8 @@ public class RidingToClientActivity extends AppCompatActivity implements OnMapRe
                             }
 
                             if (doc == null){
-                                Log.d("is null", String.valueOf(true));
+                                Log.d("doc is null", String.valueOf(true));
                             } else {
-                                Log.d("is null", String.valueOf(false));
                                 ArrayList<LatLng> directionPoint = md.getDirection(doc);
                                 PolylineOptions rectLine = new PolylineOptions().width(10).color(0xff9473b6);
                                 Log.v("nb steps", String.valueOf(directionPoint.size()));

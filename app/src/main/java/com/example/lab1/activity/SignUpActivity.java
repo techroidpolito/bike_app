@@ -35,7 +35,7 @@ public class SignUpActivity extends AppCompatActivity {
     private Button btnSignUp, btnResetPassword;
     private TextView btnSignIn;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference dbReference;
+    private DatabaseReference dbReference, dbStatusReference;
     private FirebaseUser firebaseUser;
     private ProfileInfo bikerModel = new ProfileInfo();
     SharedPreferences sharedpreferences;
@@ -137,6 +137,24 @@ public class SignUpActivity extends AppCompatActivity {
 
             if(databaseError == null) {
                 dbReference.child(firebaseUser.getUid()).updateChildren(biker_entries);
+                Intent i = new Intent(getApplicationContext(), ProfileEditingActivity.class);
+                i.putExtra(getString(R.string.biker_profile_data),bikerModel);
+                startActivity(i);
+                ((AppCompatActivity)context).overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                finish();
+            }else {
+                Toast.makeText(getApplicationContext(), getString(R.string.internal_error), Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
+
+        Map<String,Object> biker_status_entries = new HashMap<>();
+        biker_status_entries.put(getString(R.string.bikerIsAvailable),false);
+        dbStatusReference = FirebaseDatabase.getInstance().getReference(getString(R.string.biker_status));
+        dbStatusReference.updateChildren(biker_dataPlaceholder, (databaseError, databaseReference) -> {
+
+            if(databaseError == null) {
+                dbStatusReference.child(firebaseUser.getUid()).updateChildren(biker_status_entries);
                 Intent i = new Intent(getApplicationContext(), ProfileEditingActivity.class);
                 i.putExtra(getString(R.string.biker_profile_data),bikerModel);
                 startActivity(i);

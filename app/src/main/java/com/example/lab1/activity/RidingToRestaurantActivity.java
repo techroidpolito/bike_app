@@ -3,7 +3,6 @@ package com.example.lab1.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -149,12 +148,6 @@ public class RidingToRestaurantActivity extends AppCompatActivity implements OnM
         clientPhoneNumberTv.setText(pendingRequestAdapterModel.getClientPhoneNumber());
         clientPaymentRl.setVisibility(View.GONE);
 
-        if( pendingRequestAdapterModel.getRestaurantDistance() < 1.0 ){ //condition to adapt to the distance unit
-            arrivedButton.setVisibility(View.VISIBLE);
-        } else {
-            arrivedButton.setVisibility(View.GONE);
-        }
-
         restaurantPhoneRl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -193,45 +186,11 @@ public class RidingToRestaurantActivity extends AppCompatActivity implements OnM
     }
 
     private void setRestaurantCoordinates() {
-        //String restaurantAddress = pendingRequestAdapterModel.getRestaurantAddress();
         mRestaurantLocation = new LatLng(pendingRequestAdapterModel.getRestaurantLatitude(),pendingRequestAdapterModel.getRestaurantLongitude());
-        /*LatLng restaurant_coordinates = null;
-        String[] info = {restaurantAddress};
-        try {
-            restaurant_coordinates = mg_r.execute(info).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if (restaurant_coordinates == null) {
-            Log.d("coordinates are null", String.valueOf(true));
-        } else {
-            Log.d("coordinates are null", String.valueOf(false));
-            Log.d("coordinates", String.valueOf(restaurant_coordinates));
-            mRestaurantLocation = restaurant_coordinates;
-        }*/
     }
 
     private void setClientCoordinates() {
-        //String clientAddress = pendingRequestAdapterModel.getClientAddress();
         mClientLocation = new LatLng(pendingRequestAdapterModel.getClientLatitude(),pendingRequestAdapterModel.getClientLongitude());
-        /*LatLng client_coordinates = null;
-        String[] info = {clientAddress};
-        try {
-            client_coordinates = mg_c.execute(info).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        if (client_coordinates == null) {
-            Log.d("coordinates are null", String.valueOf(true));
-        } else {
-            Log.d("coordinates are null", String.valueOf(false));
-            Log.d("coordinates", String.valueOf(client_coordinates));
-            mClientLocation = client_coordinates;
-        }*/
     }
 
     @Override
@@ -347,9 +306,8 @@ public class RidingToRestaurantActivity extends AppCompatActivity implements OnM
                             }
 
                             if (doc == null){
-                                Log.d("is null", String.valueOf(true));
+                                Log.d("doc is null", String.valueOf(true));
                             } else {
-                                Log.d("is null", String.valueOf(false));
                                 ArrayList<LatLng> directionPoint = md.getDirection(doc);
                                 PolylineOptions rectLine = new PolylineOptions().width(10).color(0xff9473b6);
                                 Log.v("nb steps", String.valueOf(directionPoint.size()));

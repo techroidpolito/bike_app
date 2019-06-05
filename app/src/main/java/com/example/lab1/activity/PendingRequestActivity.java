@@ -74,7 +74,6 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
     private Location mLastKnownLocation;
     private boolean mLocationPermissionGranted;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    public static final int ACCEPT_CODE = 1;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 2;
     private static final String TAG = PendingRequestActivity.class.getSimpleName();
 
@@ -107,7 +106,6 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
             bikerId = savedInstanceState.getString("bikerId");
         } else {
             if (bikerId == null) {
-                Log.d("received bid", getIntent().getStringExtra(getString(R.string.bikerID)));
                 bikerId = getIntent().getStringExtra(getString(R.string.bikerID));
             }
             setAdapterItem();
@@ -125,59 +123,61 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
                     String order_id = childDataSnapshot.getKey();
                     Log.d(TAG, order_id + " : " + childDataSnapshot.getValue()); //displays the key for the node
 
-                    HashMap<String,String> order = (HashMap<String, String>) childDataSnapshot.getValue();
-                    String fid = order.get(getString(R.string.foodtype_id));
-                    String bid = order.get(getString(R.string.bikerID));
-                    Boolean rider_accepted = Boolean.valueOf(order.get(getString(R.string.rider_accepted)));
+                    HashMap<String,Object> order = (HashMap<String, Object>) childDataSnapshot.getValue();
+                    String fid = String.valueOf(order.get(getString(R.string.foodtype_id)));
+                    String bid = String.valueOf(order.get(getString(R.string.bikerID)));
+                    Boolean rider_accepted = (Boolean) order.get(getString(R.string.rider_accepted));
+                    Boolean delivered_status = (Boolean) order.get(getString(R.string.delivered_status));
 
-                    double restaurant_latitude = Double.parseDouble(order.get(getString(R.string.restaurant_latitude)));
-                    double restaurant_longitude = Double.parseDouble(order.get(getString(R.string.restaurant_longitude)));
-                    double customer_latitude = Double.parseDouble(order.get(getString(R.string.customer_latitude)));
-                    double customer_longitude = Double.parseDouble(order.get(getString(R.string.customer_longitude)));
-                    String restaurant_address = getPlaceName(restaurant_latitude,restaurant_longitude);
-                    String customer_address = getPlaceName(customer_latitude,customer_longitude);
+                    if( bid.equals(bikerId) && !rider_accepted  && !delivered_status){
 
-                    DecimalFormat df = new DecimalFormat("#.####");
-                    float[] to_restaurant = {};
-                    Location.distanceBetween(
-                            mLastKnownLocation.getLatitude(),
-                            mLastKnownLocation.getLongitude(),
-                            restaurant_latitude,
-                            restaurant_longitude,
-                            to_restaurant);
-                    float distance_to_restaurant = Float.parseFloat(df.format(to_restaurant[0]/1000)); //to convert mters in kilometers
-                    Log.d("2restaurant",distance_to_restaurant+"");
+                        double restaurant_latitude = Double.parseDouble(String.valueOf(order.get(getString(R.string.restaurant_latitude))));
+                        double restaurant_longitude = Double.parseDouble(String.valueOf(order.get(getString(R.string.restaurant_longitude))));
+                        double customer_latitude = Double.parseDouble(String.valueOf(order.get(getString(R.string.customer_latitude))));
+                        double customer_longitude = Double.parseDouble(String.valueOf(order.get(getString(R.string.customer_longitude))));
+                        String restaurant_address = getPlaceName(restaurant_latitude,restaurant_longitude);
+                        String customer_address = getPlaceName(customer_latitude,customer_longitude);
+                        Log.d("location",mLastKnownLocation.getLatitude()+" "+mLastKnownLocation.getLongitude());
+                        Log.d("ra",restaurant_address);
+                        Log.d("ca",customer_address);
 
-                    float[] to_customer = {};
-                    Location.distanceBetween(
-                            restaurant_latitude,
-                            restaurant_longitude,
-                            customer_latitude,
-                            customer_longitude,
-                            to_customer);
-                    float distance_to_customer = Float.parseFloat(df.format(to_customer[0]/1000)); //to convert mters in kilometers
-                    Log.d("2customer",distance_to_customer+"");
+                        DecimalFormat df = new DecimalFormat("#.##");
+                        float[] to_restaurant = new float[5];
+                        Location.distanceBetween(
+                                mLastKnownLocation.getLatitude(),
+                                mLastKnownLocation.getLongitude(),
+                                restaurant_latitude,
+                                restaurant_longitude,
+                                to_restaurant);
+                        float distance_to_restaurant = Float.parseFloat(df.format(to_restaurant[0]/1000)); //to convert mters in kilometers
+                        Log.d("2restaurant",distance_to_restaurant+"");
 
+                        float[] to_customer = new float[5];
+                        Location.distanceBetween(
+                                restaurant_latitude,
+                                restaurant_longitude,
+                                customer_latitude,
+                                customer_longitude,
+                                to_customer);
+                        float distance_to_customer = Float.parseFloat(df.format(to_customer[0]/1000)); //to convert mters in kilometers
+                        Log.d("2customer",distance_to_customer+"");
 
-                    //compute total min distance & add it in the PendingRequestAdapterModel
-
-                    if( bid!=null && bid.equals(bikerId) && !rider_accepted){
                         pendingRequestAdapterModel.add(
                                 new PendingRequestAdapterModel(
-                                        order.get(getString(R.string.restaurant_name)),
+                                        String.valueOf(order.get(getString(R.string.restaurant_name))),
                                         restaurant_address,
                                         restaurant_latitude,
                                         restaurant_longitude,
                                         distance_to_restaurant,
-                                        order.get(getString(R.string.restaurant_phone)),
-                                        order.get(getString(R.string.customer_name)),
+                                        String.valueOf(order.get(getString(R.string.restaurant_phone))),
+                                        String.valueOf(order.get(getString(R.string.customer_name))),
                                         customer_address,
                                         customer_latitude,
                                         customer_longitude,
                                         distance_to_customer,
-                                        order.get(getString(R.string.customer_phone)),
-                                        order.get(getString(R.string.payment_type)),
-                                        Float.parseFloat( order.get(getString(R.string.price)) ),
+                                        String.valueOf(order.get(getString(R.string.customer_phone))),
+                                        String.valueOf(order.get(getString(R.string.payment_type))),
+                                        Float.parseFloat(String.valueOf(order.get(getString(R.string.price)))),
                                         0,
                                         order_id,
                                         fid
@@ -208,10 +208,7 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ArrayList<String> biker_al = new ArrayList<>();
-                //for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                    //String key = childDataSnapshot.getKey();
-                    //Log.d(TAG,key+" : " + childDataSnapshot.getValue()); //displays the key for the node
-                //}
+
                 biker_al.add(dataSnapshot.child(getString(R.string.bikerFirstName)).getValue()+"");
                 biker_al.add(dataSnapshot.child(getString(R.string.bikerLastName)).getValue()+"");
                 biker_al.add(dataSnapshot.child(getString(R.string.bikerPhone)).getValue()+"");
@@ -238,7 +235,7 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
                 Log.e("The read failed ", databaseError.getMessage());
             }
         });
-        // set picture as rider's pp if any
+
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -275,9 +272,6 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
     }
 
     private void setAdapterItem(){
-        //pendingRequestAdapterModel.add(new PendingRequestAdapterModel("Pizzeria di Gratus","via Roma, 42  10129 Torino","0111234567",  "Louis", "via Torricelli, 38  10129 Torino","+33684457259","Cash",25, 127,"jncadnadcjnakd"));
-        //pendingRequestAdapterModel.add(new PendingRequestAdapterModel("Turkish kebab","via Nizza, 13  10129 Torino","0116281927",  "Elisa", "via Garibaldi, 97  10128 Torino","+39366921127","Online",10, 134,"nkzednekdnka"));
-
         if (pendingRequestAdapterModel != null && pendingRequestAdapterModel.size() > 0) {
             setAdapter();
         }
@@ -314,8 +308,8 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
         String order_id = pendingRequestAdapterModel.get(position).getOrder_id();
         DatabaseReference currentOrderReference = ordersReference.child(order_id);
 
-        currentOrderReference.child(getString(R.string.order_status)).setValue(String.valueOf(4)); //4 = rider accepted
-        currentOrderReference.child(getString(R.string.rider_accepted)).setValue(String.valueOf(true));
+        currentOrderReference.child(getString(R.string.order_status)).setValue(getString(R.string.order_status_4)); //4 = rider accepted
+        currentOrderReference.child(getString(R.string.rider_accepted)).setValue(true);
         currentOrderReference.child(getString(R.string.bikerPhone)).setValue(bikerModel.getPhone_nb());
         currentOrderReference.child(getString(R.string.bikerEmail)).setValue(bikerModel.getEmail_address());
         currentOrderReference.child(getString(R.string.bikerLatitude)).setValue(mLastKnownLocation.getLatitude()+"");
@@ -339,7 +333,7 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
 
         String order_id = pendingRequestAdapterModel.get(position).getOrder_id();
         ordersReference.child(order_id).child(getString(R.string.bikerID)).setValue(null);
-        ordersReference.child(order_id).child(getString(R.string.order_status)).setValue(String.valueOf(5)); //5 = rider rejected
+        ordersReference.child(order_id).child(getString(R.string.order_status)).setValue(getString(R.string.order_status_5)); //5 = rider rejected
     }
 
     private void setDrawerProfilePicture(String picture_path){
@@ -379,15 +373,15 @@ public class PendingRequestActivity extends AppCompatActivity implements AcceptC
                 locationResult.addOnCompleteListener(this, new OnCompleteListener<Location>() {
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {
-                        if (task.isSuccessful()) {
+                        if (!task.isSuccessful()) {
+                            Log.d(TAG, "Current location is null. Using defaults.");
+                        } else {
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = task.getResult();
                             String location = String.valueOf(mLastKnownLocation.getLatitude())+"°, "+String.valueOf(mLastKnownLocation.getLongitude())+"°";
                             Log.d("location",location);
                             bikerStatusReference.child(getString(R.string.bikerLatitude)).setValue(mLastKnownLocation.getLatitude()+"");
                             bikerStatusReference.child(getString(R.string.bikerLongitude)).setValue(mLastKnownLocation.getLongitude()+"");
-                        } else {
-                            Log.d(TAG, "Current location is null. Using defaults.");
                         }
                     }
                 });

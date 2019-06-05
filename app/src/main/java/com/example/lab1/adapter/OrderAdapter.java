@@ -1,10 +1,10 @@
 package com.example.lab1.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -39,8 +39,8 @@ public class OrderAdapter extends RecyclerView.Adapter {
         foodItemViewHolder = (OrderAdapter.FoodItemViewHolder) holder;
 
         foodItemViewHolder.foodNameTv.setText(orderAdapterModels.getFood_name());
-        foodItemViewHolder.foodCountTv.setText("Quantity: "+String.valueOf(orderAdapterModels.getFood_count()));
-        //foodItemViewHolder.foodPictureIv.setPicture(orderAdapterModels.getFood_picture()); ??????????????????????????????????????????????????????????????????????????????
+        Log.d("getFood_name",orderAdapterModels.getFood_name());
+        foodItemViewHolder.foodCountTv.setText("X "+orderAdapterModels.getFood_count());
     }
 
     @Override
@@ -51,13 +51,11 @@ public class OrderAdapter extends RecyclerView.Adapter {
 
     public class FoodItemViewHolder extends RecyclerView.ViewHolder {
         TextView foodNameTv, foodCountTv;
-        ImageView foodPictureIv;
 
         public FoodItemViewHolder(@NonNull View itemView) {
             super(itemView);
             foodNameTv = itemView.findViewById(R.id.foodNameTv);
             foodCountTv = itemView.findViewById(R.id.foodCountTv);
-            foodPictureIv = itemView.findViewById(R.id.foodPictureIv );
         }
     }
 }

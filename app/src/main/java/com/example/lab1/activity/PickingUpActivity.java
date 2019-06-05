@@ -34,7 +34,7 @@ import java.util.HashMap;
 public class PickingUpActivity extends AppCompatActivity {
     private Button pickupButton;
     private CardView clientCv;
-    private TextView clientNameTv, clientAddressTv, clientPhoneNumberTv, paymentTypeTv, priceTv, orderNumberTv;
+    private TextView clientNameTv, clientAddressTv, clientPhoneNumberTv, paymentTypeTv, priceTv;
     private RecyclerView orderContentRv;
     private RelativeLayout clientPhoneRl;
 
@@ -45,7 +45,6 @@ public class PickingUpActivity extends AppCompatActivity {
     private OrderAdapter mAdapter;
     private ArrayList<OrderAdapterModel> orderAdapterModel;
     private RecyclerView.LayoutManager mLayoutManager;
-    private DatabaseReference foodTypeReference;
 
     private static final int PERMISSION_REQUEST_CALL_PHONE = 2;
     private static final String TAG = PickingUpActivity.class.getSimpleName();
@@ -71,7 +70,6 @@ public class PickingUpActivity extends AppCompatActivity {
         clientPhoneNumberTv = clientCv.findViewById(R.id.phoneNumberTextView);
         paymentTypeTv = clientCv.findViewById(R.id.paymentTypeTextView);
         priceTv = clientCv.findViewById(R.id.priceTextView);
-        orderNumberTv = clientCv.findViewById(R.id.orderNumberTextview);
         clientPhoneRl = clientCv.findViewById(R.id.phoneNumberRelativeLayout);
 
         if (savedInstanceState != null) {
@@ -83,38 +81,23 @@ public class PickingUpActivity extends AppCompatActivity {
         }
 
         orderReference = FirebaseDatabase.getInstance().getReference(getString(R.string.order_details)).child( deliveryAdapterModel.getOrder_id() );
-        foodTypeReference = FirebaseDatabase.getInstance().getReference(getString(R.string.foodtype)).child(deliveryAdapterModel.getFoodType_id());
 
-        foodTypeReference.addValueEventListener(new ValueEventListener() {
+        orderReference.child(getString(R.string.foodtype)).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 orderAdapterModel = new ArrayList<>();
-                for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                    String order_id = childDataSnapshot.getKey();
-                    Log.d(TAG, order_id + " : " + childDataSnapshot.getValue()); //displays the key for the node
-/*
-                    HashMap<String,String> order = (HashMap<String, String>) childDataSnapshot.getValue();
-                    String fid = order.get(getString(R.string.foodtype_id));
-                    String bid = order.get(getString(R.string.bikerID));
-                    Boolean rider_accepted = Boolean.valueOf(order.get(getString(R.string.rider_accepted)));
 
-                    if( bid!=null && bid.equals(bikerId) && !rider_accepted){
-                        pendingRequestAdapterModel.add(
-                                new PendingRequestAdapterModel(
-                                        order.get(getString(R.string.restaurant_name)),
-                                        order.get(getString(R.string.restaurant_address)),
-                                        order.get(getString(R.string.restaurant_phone)),
-                                        order.get(getString(R.string.customer_name)),
-                                        order.get(getString(R.string.customer_address)),
-                                        order.get(getString(R.string.customer_phone)),
-                                        order.get(getString(R.string.payment_type)),
-                                        Float.parseFloat( order.get(getString(R.string.price)) ),
-                                        0,
-                                        order_id,
-                                        fid
-                                )
-                        );
-                    }*/
+                //only one type of food at a time
+                String food_type = null;
+                for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                    food_type = childDataSnapshot.getKey(); //here = Noodles
+                }
+                HashMap<String,Object> food_items = (HashMap<String, Object>) dataSnapshot.child(food_type).getValue();
+                for ( String food_item_id : food_items.keySet() ) {
+                    HashMap<String,Object> food_info = (HashMap<String, Object>) food_items.get(food_item_id);
+                    String food_name = String.valueOf(food_info.get("food_name"));
+                    String food_count = String.valueOf(food_info.get("food_quantity"));
+                    orderAdapterModel.add( new OrderAdapterModel(food_name,food_count,food_item_id) );
                 }
                 setAdapter();
             }
@@ -128,7 +111,7 @@ public class PickingUpActivity extends AppCompatActivity {
         pickupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                orderReference.child(getString(R.string.order_status)).setValue(String.valueOf(6)); //6 = order picked up
+                orderReference.child(getString(R.string.order_status)).setValue(getString(R.string.order_status_6)); //6 = order picked up
 
                 Intent i = new Intent(PickingUpActivity.this, RidingToClientActivity.class);
                 i.putExtra("info",deliveryAdapterModel);
@@ -165,9 +148,6 @@ public class PickingUpActivity extends AppCompatActivity {
         paymentTypeTv.setText(deliveryAdapterModel.getPaymentType());
         String price = Float.toString(deliveryAdapterModel.getPrice()) + " € ";
         priceTv.setText(price);
-        orderNumberTv.setVisibility(View.VISIBLE);
-        String orderNumber = "Order n° "+Integer.toString(deliveryAdapterModel.getOrderNumber());
-        orderNumberTv.setText(orderNumber);
     }
 
     private void setAdapter() {

@@ -1,5 +1,6 @@
 package com.example.lab1.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.InputStream;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -27,7 +29,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import com.bumptech.glide.Glide;
 import com.example.lab1.R;
+import com.example.lab1.fragment.BottomSheetFragment;
 import com.example.lab1.model.ProfileInfo;
+import com.example.lab1.util.CameraInterface;
+import com.example.lab1.util.PhotoInterface;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
@@ -37,18 +42,20 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 
-public class ProfileEditingActivity extends AppCompatActivity {
+public class ProfileEditingActivity extends AppCompatActivity implements CameraInterface, PhotoInterface {
     private ImageButton edit_picture;
     private View contextView;
     private EditText first_name_et, last_name_et, email_address_et, phone_nb_et, description_et, codice_fiscale_et;
     private CircleImageView profileImage;
-    private String profileImg,profileLocation;
+    private String profileImg,profileLocation = null;
     private Toolbar toolbar;
+    Boolean pressed = false;
+    BottomSheetFragment bottomSheetFragment;
 
     private ProfileInfo profileInfo;
     private String bikerId;
     private StorageReference storageReference;
-    private static final int picture_request_code = 2;
+    private static final int REQUEST_PROFILE_IMAGE = 2;
 
     private static final int ON_SUCCESS = 3;
     private static final int ON_PROGRESS = 4;
@@ -87,42 +94,44 @@ public class ProfileEditingActivity extends AppCompatActivity {
         Log.d("test_complete", String.valueOf((profileInfo.isAlready_filled() || profileInfo.getBiker_completed())));
 
         String firstname = profileInfo.getFirstName();
-        if (!firstname.equals("")) {
+        if (firstname != null) {
             first_name_et.setText(firstname);
         }
+        Log.d("firstname",firstname);
         String lastname = profileInfo.getLastName();
-        if (!lastname.equals("")) {
+        if (lastname != null) {
             last_name_et.setText(lastname);
         }
         String phone_nb = profileInfo.getPhone_nb();
-        if (!phone_nb.equals("")) {
+        if (phone_nb != null) {
             phone_nb_et.setText(phone_nb);
         }
         String email_address = profileInfo.getEmail_address();
-        if (!email_address.equals("")) {
+        if (email_address != null) {
             email_address_et.setText(email_address);
         }
         String description = profileInfo.getDescription();
-        if (!description.equals("")) {
+        if (description != null) {
             description_et.setText(description);
         }
         String codice_fiscale = profileInfo.getCodiceFiscale();
-        if (!codice_fiscale.equals("")){
+        if (codice_fiscale != null){
             codice_fiscale_et.setText(codice_fiscale);
         }
         String pp_uri = profileInfo.getProfile_picture_uri();
         if (pp_uri != null) {
-            profileImg = pp_uri;
-            setProfilePicture(pp_uri);
+            Log.d("saved path",getString(R.string.biker_profile_image_folder)+pp_uri);
+            Log.d("pp_uri",pp_uri);
+            profileImg = getString(R.string.biker_profile_image_folder)+pp_uri;
+            setProfilePicture(profileImg);
         }
 
         edit_picture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 contextView = v;
-                Intent intent = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, picture_request_code);
+                pressed = true;
+                showProfileBottomSheetDialogFragment();
             }
         });
 
@@ -133,7 +142,8 @@ public class ProfileEditingActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
-            if (requestCode == picture_request_code) {
+            if (requestCode == REQUEST_PROFILE_IMAGE) {
+
                 Uri uri = data.getParcelableExtra(getString(R.string.path_image_uri));
                 profileImg = uri.toString();
                 profileLocation = uri.getLastPathSegment();
@@ -147,7 +157,7 @@ public class ProfileEditingActivity extends AppCompatActivity {
                         snackbar.show();
                         upload_state = ON_SUCCESS;
                         invalidateOptionsMenu();
-                        setProfilePicture(profileLocation);
+                        setProfilePicture(profileImg);
                     }
                 })
                         .addOnFailureListener(new OnFailureListener() {
@@ -229,10 +239,14 @@ public class ProfileEditingActivity extends AppCompatActivity {
                     String email_address = email_address_et.getText().toString();
                     profileInfo.setEmail_address(email_address);
                     String description = description_et.getText().toString();
-                    profileInfo.setDescription(description);
+                    if(description != null){
+                        profileInfo.setDescription(description);
+                    }
                     String codice_fiscale = codice_fiscale_et.getText().toString();
                     profileInfo.setCodiceFiscale(codice_fiscale);
-                    profileInfo.setProfile_picture_uri(profileLocation);
+                    if(profileLocation != null) {
+                        profileInfo.setProfile_picture_uri(profileLocation);
+                    }
 
                     Intent saveIntent = new Intent();
                     saveIntent.putExtra("button", "save");
@@ -266,11 +280,11 @@ public class ProfileEditingActivity extends AppCompatActivity {
                 camera_intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
                 profileImg = String.valueOf(Uri.fromFile(photo));
                 profileLocation = (Uri.fromFile(photo)).getLastPathSegment();
-                startActivityForResult(camera_intent, picture_request_code);
+                startActivityForResult(camera_intent, REQUEST_PROFILE_IMAGE);
             case R.id.context_gallery:
                 Intent gallery_intent = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(gallery_intent, picture_request_code);
+                startActivityForResult(gallery_intent, REQUEST_PROFILE_IMAGE);
             default:
                 return super.onContextItemSelected(item);
         }
@@ -279,6 +293,7 @@ public class ProfileEditingActivity extends AppCompatActivity {
     private void setProfilePicture(String picture_path){
         Glide.with(this).load(picture_path).into(profileImage);
         profileImage.setColorFilter(ContextCompat.getColor(this, android.R.color.transparent));
+        Log.d("path",picture_path);
     }
 
     private boolean setValidation(){
@@ -307,5 +322,53 @@ public class ProfileEditingActivity extends AppCompatActivity {
         else{
             return true;
         }
+    }
+
+
+    public void showProfileBottomSheetDialogFragment() {
+        bottomSheetFragment = new BottomSheetFragment();
+        bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());
+        bottomSheetFragment.setCameraInterfaceC(ProfileEditingActivity.this);
+        bottomSheetFragment.setPhotoInterface(ProfileEditingActivity.this);
+    }
+
+    @Override
+    public void cameraClicked() {
+        launchCameraIntent();
+    }
+
+    @Override
+    public void photoClicked() {
+        launchGalleryIntent();
+    }
+
+    private void launchCameraIntent() {
+
+        Intent intent = new Intent(ProfileEditingActivity.this, ImagePickerActivity.class);
+        intent.putExtra(ImagePickerActivity.INTENT_IMAGE_PICKER_OPTION, ImagePickerActivity.REQUEST_IMAGE_CAPTURE);
+        intent.putExtra(ImagePickerActivity.INTENT_LOCK_ASPECT_RATIO, true);
+        intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_X, 1); // 16x9, 1x1, 3:4, 3:2
+        intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_Y, 1);
+        intent.putExtra(ImagePickerActivity.INTENT_SET_BITMAP_MAX_WIDTH_HEIGHT, true);
+        intent.putExtra(ImagePickerActivity.INTENT_BITMAP_MAX_WIDTH, 1000);
+        intent.putExtra(ImagePickerActivity.INTENT_BITMAP_MAX_HEIGHT, 1000);
+        if(pressed==true) {
+            startActivityForResult(intent, REQUEST_PROFILE_IMAGE);
+        }
+        bottomSheetFragment.dismiss();
+    }
+
+
+    private void launchGalleryIntent() {
+
+        Intent intent = new Intent(ProfileEditingActivity.this, ImagePickerActivity.class);
+        intent.putExtra(ImagePickerActivity.INTENT_IMAGE_PICKER_OPTION, ImagePickerActivity.REQUEST_GALLERY_IMAGE);
+        intent.putExtra(ImagePickerActivity.INTENT_LOCK_ASPECT_RATIO, true);
+        intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_X, 1); // 16x9, 1x1, 3:4, 3:2
+        intent.putExtra(ImagePickerActivity.INTENT_ASPECT_RATIO_Y, 1);
+        if(pressed==true){
+            startActivityForResult(intent, REQUEST_PROFILE_IMAGE);
+        }
+        bottomSheetFragment.dismiss();
     }
 }

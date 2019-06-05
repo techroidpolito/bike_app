@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.lab1.R;
@@ -51,16 +52,13 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //profileInfo = new ProfileInfo();
         if (getIntent() != null) {
-            Log.d("intent","serializable");
             profileInfo = (ProfileInfo) getIntent().getSerializableExtra(getString(R.string.biker_profile_data));
             bikerId = profileInfo.getBikerID();
+
         } else if (savedInstanceState != null) {
-            //profileInfo = new ProfileInfo(Objects.requireNonNull(savedInstanceState.getStringArrayList("profile_info")));
             profileInfo = (ProfileInfo) savedInstanceState.getSerializable(getString(R.string.biker_profile_data));
             bikerId = profileInfo.getBikerID();
-            Log.d("instance","saved");
         }
-        Log.d("bid",bikerId);
 
         tv_username = findViewById(R.id.userName);
         tv_email_address = findViewById(R.id.emailAddress);
@@ -82,7 +80,6 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
         });
 
         mFirebaseInstance = FirebaseDatabase.getInstance();
-        storageReference = FirebaseStorage.getInstance().getReference();
         mBikerDetailsDatabase = mFirebaseInstance.getReference(getString(R.string.biker_details)).child(bikerId);
         mBikerDetailsDatabase.addValueEventListener(new ValueEventListener() {
             @Override
@@ -151,7 +148,7 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
     private void setInformation(){
         //Check if each field is not empty
         String username = profileInfo.getFirstName()+" "+profileInfo.getLastName();
-        if (!username.equals(" ")) {
+        if (profileInfo.getFirstName()!=null && profileInfo.getLastName()!=null) {
             tv_username.setText(username);
         }
         String phone_nb = profileInfo.getPhone_nb();
@@ -206,10 +203,14 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
     }
 
     private boolean setProfilePicture(String picture_uri){
-        Glide.with(this)
-                .load(storageReference.child( getString(R.string.biker_profile_image_folder)+picture_uri ))
+        storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(getString(R.string.biker_profile_image_folder)+picture_uri);
+        /*GlideApp.with(this)
+                .load(storageReference)
                 .into(profile_civ);
-        return true;
+        profile_civ.setColorFilter(ContextCompat.getColor(this, android.R.color.transparent));
+
+        return true;*/
+        return false;
     }
 
     /**
@@ -231,8 +232,12 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
         biker_entries.put(getString(R.string.bikerPhone),profileInfo.getPhone_nb());
         biker_entries.put(getString(R.string.bikerEmail),profileInfo.getEmail_address());
         biker_entries.put(getString(R.string.bikerCodiceFiscale),profileInfo.getCodiceFiscale());
-        biker_entries.put(getString(R.string.bikerDescription),profileInfo.getDescription());
-        biker_entries.put(getString(R.string.bikerPictureUri),profileInfo.getProfile_picture_uri());
+        if(profileInfo.getDescription()!=null && profileInfo.getDescription()!="") {
+            biker_entries.put(getString(R.string.bikerDescription), profileInfo.getDescription());
+        }
+        if(profileInfo.getProfile_picture_uri()!=null && profileInfo.getProfile_picture_uri()!="") {
+            biker_entries.put(getString(R.string.bikerPictureUri), profileInfo.getProfile_picture_uri());
+        }
         biker_entries.put(getString(R.string.biker_completed),true);
         mBikerDetailsDatabase.updateChildren(biker_dataPlaceholder, (databaseError, databaseReference) -> {
             if(databaseError == null) {
@@ -245,7 +250,9 @@ public class ProfileNoEditingActivity extends AppCompatActivity {
 
         Map<String,Object> biker_status_entries = new HashMap<>();
         biker_status_entries.put(getString(R.string.bikerName),profileInfo.getFirstName()+" "+profileInfo.getLastName());
-        biker_status_entries.put(getString(R.string.bikerPictureUri),profileInfo.getProfile_picture_uri());
+        if(profileInfo.getProfile_picture_uri()!=null && profileInfo.getProfile_picture_uri()!="") {
+            biker_status_entries.put(getString(R.string.bikerPictureUri), profileInfo.getProfile_picture_uri());
+        }
         biker_status_entries.put(getString(R.string.bikerIsAvailable),profileInfo.isAvailable());
         biker_status_entries.put(getString(R.string.bikerLatitude),profileInfo.getLatitude());
         biker_status_entries.put(getString(R.string.bikerLongitude),profileInfo.getLongitude());
